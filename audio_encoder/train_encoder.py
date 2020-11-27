@@ -1,5 +1,6 @@
 from glob import glob
 
+import librosa
 import numpy as np
 import pytorch_lightning as pl
 import torch
@@ -15,10 +16,11 @@ NPY = ".npy"
 WAV = ".wav"
 
 class AudioDataset(torch.utils.data.Dataset):
-    def __init__(self, data, max_len=100, augment=True):
-        self.data = data
+    def __init__(self, data, max_len=72, n_mels=96 augment=True):
+        self.data = list(map(str, data))
         self.max_len = max_len
         self.augment = augment
+        self.n_mels = n_mels
         ext = "." + self.data[0].split('.')[-1]
         assert ext in [NPY, WAV]
         self.ext = ext
@@ -31,9 +33,10 @@ class AudioDataset(torch.utils.data.Dataset):
         data_path = self.data[idx]
 
         if self.ext == WAV:
-            x = librosa.load(data_path, sr=-1)
+            audio, sr = librosa.load(data_path, sr=None)
+            x = librosa.power_to_db(librosa.feature.melspectrogram(audio, sr=sr, n_mels=self.n_mels)).T
         elif self.ext = NPY:
-            x = np.load(npy_path)
+            x = np.load(data_path).T
 
         if self.augment:
             x = random_mask(x)
@@ -81,7 +84,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--mp3_path")
-    parser.add_argument("--download", default=False, action="store_true", type=bool)
+    parser.add_argument("--download", default=False, action="store_true")
     parser.add_argument("--dataset_path")
     parser.add_argument("--extension", default=NPY)
     args = parser.parse_args()
@@ -100,7 +103,8 @@ if __name__ == "__main__":
     epochs = 512
 
     # files = sorted(list(glob(str(mp3_path / "*/*.npy"))))
-    files = list(dataset_path.glob("*/*" + args.extension))
+    files = list(dataset_path.glob("*" + args.extension))
+    print(f"total number of clips")
 
     _train, test = train_test_split(files, test_size=0.05, random_state=1337)
 

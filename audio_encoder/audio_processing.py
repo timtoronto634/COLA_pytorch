@@ -44,6 +44,8 @@ def load_audio_file(file_path, input_length=input_length):
 
 
 def random_crop(data, crop_size=128):
+    if data.shape[0] < crop_size:
+        raise ValueError(f'crop_size too big. size {crop_size} specified for {data.shape[0]}')
     start = int(random.random() * (data.shape[0] - crop_size))
     return data[start : (start + crop_size), :]
 
