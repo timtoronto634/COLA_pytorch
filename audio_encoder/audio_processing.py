@@ -49,6 +49,7 @@ def random_crop(data, crop_size=128):
 
 
 def random_mask(data, rate_start=0.1, rate_seq=0.2):
+    # frequency masking
     new_data = data.copy()
     mean = new_data.mean()
     prev_zero = False

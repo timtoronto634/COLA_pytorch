@@ -11,20 +11,29 @@ from torch.utils.data import DataLoader
 from audio_encoder.audio_processing import random_crop, random_mask, random_multiply
 from audio_encoder.encoder import Cola
 
+NPY = ".npy"
+WAV = ".wav"
 
 class AudioDataset(torch.utils.data.Dataset):
     def __init__(self, data, max_len=100, augment=True):
         self.data = data
         self.max_len = max_len
         self.augment = augment
+        ext = "." + self.data[0].split('.')[-1]
+        assert ext in [NPY, WAV]
+        self.ext = ext
+
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        npy_path = self.data[idx]
+        data_path = self.data[idx]
 
-        x = np.load(npy_path)
+        if self.ext == WAV:
+            x = librosa.load(data_path, sr=-1)
+        elif self.ext = NPY:
+            x = np.load(npy_path)
 
         if self.augment:
             x = random_mask(x)
@@ -72,14 +81,26 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--mp3_path")
+    parser.add_argument("--download", default=False, action="store_true", type=bool)
+    parser.add_argument("--dataset_path")
+    parser.add_argument("--extension", default=NPY)
     args = parser.parse_args()
 
-    mp3_path = Path(args.mp3_path)
+    if args.mp3_path:
+        dataset_path = Path(args.mp3_path)
+    elif args.dataset_path:
+        dataset_path = Path(args.dataset_path)
+    # mp3_path = Path(args.mp3_path)
+    if not args.download and not dataset_path.exists():
+        raise ValueError("dataset does not exit")
+    elif args.download:
+        raise NotImplementedError("downloading script is not implimented")  # TODO
 
     batch_size = 128
     epochs = 512
 
-    files = sorted(list(glob(str(mp3_path / "*/*.npy"))))
+    # files = sorted(list(glob(str(mp3_path / "*/*.npy"))))
+    files = list(dataset_path.glob("*/*" + args.extension))
 
     _train, test = train_test_split(files, test_size=0.05, random_state=1337)
 
