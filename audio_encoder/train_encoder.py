@@ -99,8 +99,8 @@ if __name__ == "__main__":
     elif args.download:
         raise NotImplementedError("downloading script is not implimented")  # TODO
 
-    batch_size = 128
-    epochs = 512
+    batch_size = 256
+    epochs = 500
 
     # files = sorted(list(glob(str(mp3_path / "*/*.npy"))))
     files = list(dataset_path.glob("*" + args.extension))
