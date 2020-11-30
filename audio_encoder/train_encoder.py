@@ -16,7 +16,7 @@ NPY = ".npy"
 WAV = ".wav"
 
 class AudioDataset(torch.utils.data.Dataset):
-    def __init__(self, data, max_len=72, n_mels=96 augment=True):
+    def __init__(self, data, max_len=72, n_mels=96, augment=True):
         self.data = list(map(str, data))
         self.max_len = max_len
         self.augment = augment
@@ -35,7 +35,7 @@ class AudioDataset(torch.utils.data.Dataset):
         if self.ext == WAV:
             audio, sr = librosa.load(data_path, sr=None)
             x = librosa.power_to_db(librosa.feature.melspectrogram(audio, sr=sr, n_mels=self.n_mels)).T
-        elif self.ext = NPY:
+        elif self.ext == NPY:
             x = np.load(data_path).T
 
         if self.augment:
@@ -118,7 +118,7 @@ if __name__ == "__main__":
         train_data, batch_size=batch_size, num_workers=8, shuffle=True
     )
     val_loader = DataLoader(
-        val_data, batch_size=batch_size, num_workers=8, shuffle=True
+        val_data, batch_size=batch_size, num_workers=8, shuffle=False
     )
     test_loader = DataLoader(
         test_data, batch_size=batch_size, shuffle=False, num_workers=8
