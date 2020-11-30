@@ -66,6 +66,7 @@ class Cola(pl.LightningModule):
         # pytorch cross_entropy is not equivalent to tf CategoricalCrossEntropy
         # loss = F.cross_entropy(y_hat, y)
         loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
+        assert loss > 0, raise ValueError(f"loss become negative for y_hat: \n{y_hat} \n and argument of loss function is \n{torch.log(self.relu(y_hat) + 1e-7)}")
 
         _, predicted = torch.max(y_hat, 1)
         acc = (predicted == y).double().mean()
