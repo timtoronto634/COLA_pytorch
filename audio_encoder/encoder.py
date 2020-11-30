@@ -39,6 +39,8 @@ class Cola(pl.LightningModule):
         self.layer_norm = torch.nn.LayerNorm(normalized_shape=512)
         self.linear = torch.nn.Linear(512, 512, bias=False)
 
+        self.relu = torch.nn.ReLU()
+
     def forward(self, x):
         x1, x2 = x
 
@@ -63,7 +65,7 @@ class Cola(pl.LightningModule):
 
         # pytorch cross_entropy is not equivalent to tf CategoricalCrossEntropy
         # loss = F.cross_entropy(y_hat, y)
-        loss = torch.nn.NLLLoss()(torch.log(y_hat), y)
+        loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
 
         _, predicted = torch.max(y_hat, 1)
         acc = (predicted == y).double().mean()
@@ -81,7 +83,7 @@ class Cola(pl.LightningModule):
         y_hat = torch.mm(x1, x2.t())
 
         # loss = F.cross_entropy(y_hat, y)
-        loss = torch.nn.NLLLoss()(torch.log(y_hat), y)
+        loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
 
         _, predicted = torch.max(y_hat, 1)
         acc = (predicted == y).double().mean()
@@ -97,7 +99,7 @@ class Cola(pl.LightningModule):
         y_hat = torch.mm(x1, x2.t())
 
         # loss = F.cross_entropy(y_hat, y)
-        loss = torch.nn.NLLLoss()(torch.log(y_hat), y)
+        loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
 
         _, predicted = torch.max(y_hat, 1)
         acc = (predicted == y).double().mean()
