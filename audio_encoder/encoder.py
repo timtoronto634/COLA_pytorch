@@ -65,9 +65,9 @@ class Cola(pl.LightningModule):
         y_hat = torch.log(self.relu(_y_hat) + 1e-7)
 
         # pytorch cross_entropy is not equivalent to tf CategoricalCrossEntropy
-        # loss = F.cross_entropy(y_hat, y)
-        loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
-        assert loss > 0, f"loss become negative for y_hat: \n{_y_hat} \n and argument of loss function is \n{y_hat}"
+        loss = F.cross_entropy(y_hat, y)
+        # loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
+        # assert loss > 0, f"loss become negative for y_hat: \n{_y_hat} \n and argument of loss function is \n{y_hat}"
 
         _, predicted = torch.max(y_hat, 1)
         acc = (predicted == y).double().mean()
@@ -84,8 +84,8 @@ class Cola(pl.LightningModule):
 
         y_hat = torch.mm(x1, x2.t())
 
-        # loss = F.cross_entropy(y_hat, y)
-        loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
+        loss = F.cross_entropy(y_hat, y)
+        # loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
 
         _, predicted = torch.max(y_hat, 1)
         acc = (predicted == y).double().mean()
@@ -100,8 +100,8 @@ class Cola(pl.LightningModule):
 
         y_hat = torch.mm(x1, x2.t())
 
-        # loss = F.cross_entropy(y_hat, y)
-        loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
+        loss = F.cross_entropy(y_hat, y)
+        # loss = F.nll_loss(torch.log(self.relu(y_hat) + 1e-7), y)
 
         _, predicted = torch.max(y_hat, 1)
         acc = (predicted == y).double().mean()
